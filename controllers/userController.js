@@ -72,16 +72,51 @@ exports.getUsers = async (req, res) => {
   }
 };
 
+// controllers/userController.js
 exports.getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.userId)
-      .select('name email avatar'); // só campos que você quer expor
+      .select('name email avatar licenses')
+      .populate({
+        path: 'licenses',
+        select: 'token domain expirationDate status downloader dashboard themeUrl updateUrl'
+      });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'Usuário não encontrado.' });
+    }
+    return res.status(200).json({
+      success: true,
+      data: {
+        name:     user.name,
+        email:    user.email,
+        avatar:   user.avatar,
+        licenses: user.licenses
+      }
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+exports.getUserCounts = async (req, res) => {
+  try {
+    // Buscamos apenas os dois arrays que interessam
+    const user = await User.findById(req.user.userId)
+      .select("licenses licenseScript");
 
     if (!user) {
       return res.status(404).json({ success: false, message: "Usuário não encontrado." });
     }
 
-    return res.status(200).json({ success: true, data: user });
+    const launcherCount = user.licenses?.length || 0;
+    const scriptCount   = user.licenseScript?.length || 0;
+    const totalCount    = launcherCount + scriptCount;
+
+    return res.status(200).json({
+      success: true,
+      data: { launcherCount, scriptCount, totalCount }
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

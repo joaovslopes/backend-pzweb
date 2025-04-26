@@ -1,28 +1,22 @@
 // routes/licenseRoutes.js
 const express = require('express');
 const router = express.Router();
+const { protect } = require('../middlewares/auth');
 const {
-    createLauncherLicense,
-    getLauncherLicenseInfo,
-    verifyLauncherLicense,
-    updateLauncherLicense,
-    deleteLicense
+  createLauncherLicense,
+  getUserLicenses,
+  getLauncherLicenseInfo,
+  updateLauncherLicense,
+  deleteLicense,
+  verifyLauncherLicense
 } = require('../controllers/licenseController');
-const { checkLicenseMiddleware } = require('../middlewares/checkLicenseMiddleware');
 
-// Rota para criar a license do launcher
-router.post('/create', createLauncherLicense);
 
-// Rota para retornar informações da license do launcher
-router.get('/license-info/:token', checkLicenseMiddleware, getLauncherLicenseInfo);
-
-// Rota para verificar a license (opcional)
-router.get('/check/:token', checkLicenseMiddleware, verifyLauncherLicense);
-
-// Rota para atualizar a license (altera themeUrl ou updateUrl)
-router.put('/update/:token', updateLauncherLicense);
-
-// Rota para deletar uma license (aqui usamos o ID da license)
-router.delete('/delete/:id', deleteLicense);
+router.post('/',           protect, createLauncherLicense);
+router.get('/',            protect, getUserLicenses);
+router.get('/:token/info', protect, getLauncherLicenseInfo);
+router.put('/:token',      protect, updateLauncherLicense);
+router.delete('/:id',      protect, deleteLicense);
+router.get('/:token/verify', verifyLauncherLicense); // pública se quiser
 
 module.exports = router;
