@@ -76,38 +76,27 @@ exports.getUsers = async (req, res) => {
 exports.getCurrentUser = async (req, res) => {
   try {
     const user = await User.findById(req.user.userId)
-      .select('name email avatar licenses licenseScript') // adiciona licenseScript aqui
-      .populate([
-        {
-          path: 'licenses',
-          select: 'token domain expirationDate status downloader dashboard themeUrl updateUrl',
-        },
-        {
-          path: 'licenseScript', // faz populate dos scripts que o usuário comprou
-          select: 'name description downloadUrl image subcategory', // só pega o que você precisa
-        }
-      ]);
-
+      .select('name email avatar licenses')
+      .populate({
+        path: 'licenses',
+        select: 'token domain expirationDate status downloader dashboard themeUrl updateUrl'
+      });
     if (!user) {
       return res.status(404).json({ success: false, message: 'Usuário não encontrado.' });
     }
-
     return res.status(200).json({
       success: true,
       data: {
-        name: user.name,
-        email: user.email,
-        avatar: user.avatar,
-        licenses: user.licenses,
-        licenseScript: user.licenseScript, // adicionar no retorno
-      
+        name:     user.name,
+        email:    user.email,
+        avatar:   user.avatar,
+        licenses: user.licenses
       }
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 
 exports.getUserCounts = async (req, res) => {
