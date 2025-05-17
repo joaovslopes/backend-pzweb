@@ -4,6 +4,13 @@ const License = require('../models/licenseModel');
 const User    = require('../models/userModel');
 const { v4: uuidv4 } = require('uuid');
 
+exports.getDomain = async (req, res) => {
+  const { domain } = req.query;
+  if (!domain) return res.status(400).json({ success:false, message: 'domain é obrigatório' });
+  const exists = await License.exists({ domain });
+  return res.json({ success: true, exists });
+};
+
 // Cria a licença do launcher e associa ao usuário
 exports.createLauncherLicense = async (req, res) => {
   try {

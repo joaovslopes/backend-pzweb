@@ -8,7 +8,8 @@ const {
   getLauncherLicenseInfo,
   updateLauncherLicense,
   deleteLicense,
-  verifyLauncherLicense
+  verifyLauncherLicense,
+  getDomain
 } = require('../controllers/licenseController');
 
 
@@ -18,5 +19,6 @@ router.get('/:token/info', protect, getLauncherLicenseInfo);
 router.put('/:token',      protect, updateLauncherLicense);
 router.delete('/:id',      protect, deleteLicense);
 router.get('/:token/verify', verifyLauncherLicense); // pública se quiser
+router.get('/check-domain', getDomain);
 
 module.exports = router;

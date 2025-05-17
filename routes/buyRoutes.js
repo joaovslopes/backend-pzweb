@@ -1,12 +1,12 @@
 // routes/buyRoutes.js
-const express = require('express');
-const router = express.Router();
-const { buyProduct, buyLicense } = require('../controllers/buyController');
+const express = require('express')
+const { protectRoute } = require('../middlewares/authMiddleware')
+const { buyProduct, buyLicense } = require('../controllers/buyController')
 
-// Endpoint para comprar um produto
-router.post('/product', buyProduct);
+const router = express.Router()
 
-// Endpoint para comprar uma license (criar uma license)
-router.post('/license', buyLicense);
+// **Aqui** você precisa do protectRoute para popular req.user
+router.post('/product', protectRoute, buyProduct)
+router.post('/license', protectRoute, buyLicense)
 
-module.exports = router;
+module.exports = router
